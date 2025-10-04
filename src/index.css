@@ -1,0 +1,299 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ExoScan Design System - Space-themed UI */
+
+@layer base {
+  :root {
+    /* Space-themed color palette */
+    --background: 220 27% 8%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 27% 12%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 27% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    /* Cosmic primary - Deep space blue */
+    --primary: 240 70% 55%;
+    --primary-foreground: 210 20% 98%;
+
+    /* Nebula secondary - Purple accent */
+    --secondary: 270 45% 25%;
+    --secondary-foreground: 270 20% 95%;
+
+    --muted: 220 27% 15%;
+    --muted-foreground: 215 16% 65%;
+
+    /* Stellar accent - Golden star color */
+    --accent: 45 93% 65%;
+    --accent-foreground: 220 27% 8%;
+
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 220 27% 20%;
+    --input: 220 27% 20%;
+    --ring: 240 70% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom ExoScan colors */
+    --exo-gradient-start: 240 70% 55%;
+    --exo-gradient-end: 270 60% 45%;
+    --exo-star: 45 93% 65%;
+    --exo-planet: 190 85% 60%;
+    --exo-transit: 320 65% 55%;
+  }
+
+  /* Custom Cursor Styles */
+  * {
+    cursor: none;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-background via-background to-slate-900;
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, hsl(var(--accent)) 30%, transparent 40%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.6);
+  }
+
+  /* Interactive cursor for buttons and links */
+  button, a, [role="button"], input, textarea, select {
+    cursor: none;
+  }
+
+  button::after, a::after, [role="button"]::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, hsl(var(--primary)) 20%, hsl(var(--accent)) 40%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    opacity: 0;
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.8);
+  }
+
+  button:hover::after, a:hover::after, [role="button"]:hover::after {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure proper spacing for fixed header */
+  section {
+    scroll-margin-top: 80px;
+  }
+
+  /* Cosmic animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-star {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cursor-glow {
+    0%, 100% { 
+      box-shadow: 0 0 20px hsl(var(--accent) / 0.6);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 30px hsl(var(--accent) / 0.8);
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes bubble-float {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(0);
+    }
+    20% {
+      transform: translateY(-10px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.5);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-star {
+    animation: pulse-star 3s ease-in-out infinite;
+  }
+
+  .animate-orbit {
+    animation: orbit 20s linear infinite;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  .animate-cursor-glow {
+    animation: cursor-glow 2s ease-in-out infinite;
+  }
+
+  .animate-bubble-float {
+    animation: bubble-float 1s ease-out forwards;
+  }
+
+  /* ... keep existing code (cosmic gradients and other styles) */
+
+  /* Cosmic gradients */
+  .bg-cosmic-gradient {
+    background: linear-gradient(135deg, hsl(var(--exo-gradient-start)), hsl(var(--exo-gradient-end)));
+  }
+
+  .bg-stellar-gradient {
+    background: radial-gradient(circle, hsl(var(--exo-star)) 0%, transparent 70%);
+  }
+
+  /* Glowing effects */
+  .glow-star {
+    box-shadow: 0 0 20px hsl(var(--exo-star) / 0.5);
+  }
+
+  .glow-planet {
+    box-shadow: 0 0 15px hsl(var(--exo-planet) / 0.4);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent));
+  }
+}
+
+/* ... keep existing code (components layer) */
+
+@layer components {
+  /* Hero section styling */
+  .hero-title {
+    @apply text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent;
+    line-height: 1.4;
+    padding: 0.25rem 0;
+    margin: 0.5rem 0;
+  }
+
+  .hero-subtitle {
+    @apply text-lg md:text-xl text-muted-foreground max-w-2xl;
+  }
+
+  /* Section titles styling */  
+  .section-title {
+    @apply text-4xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent;
+    line-height: 1.4;
+    padding: 0.25rem 0;
+    margin: 0.5rem 0;
+  }
+
+  /* Card variations */
+  .card-cosmic {
+    @apply bg-card/80 backdrop-blur-sm border-border/50 shadow-lg;
+  }
+
+  .card-feature {
+    @apply card-cosmic hover:shadow-xl transition-all duration-300 hover:scale-105;
+  }
+
+  /* Button variations */
+  .btn-cosmic {
+    @apply bg-cosmic-gradient text-primary-foreground hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl;
+  }
+
+  .btn-stellar {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 glow-star transition-all duration-300;
+  }
+
+  /* Upload zone styling */
+  .upload-zone {
+    @apply border-2 border-dashed border-primary/30 hover:border-primary/60 bg-card/30 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .upload-zone-active {
+    @apply border-accent bg-accent/10 glow-star;
+  }
+
+  /* Chart container */
+  .chart-container {
+    @apply bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-4;
+  }
+
+  /* Status indicators */
+  .status-analyzing {
+    @apply bg-yellow-500/20 text-yellow-400 border-yellow-500/30;
+  }
+
+  .status-complete {
+    @apply bg-green-500/20 text-green-400 border-green-500/30;
+  }
+
+  .status-planet-detected {
+    @apply bg-purple-500/20 text-purple-400 border-purple-500/30 glow-planet;
+  }
+
+  /* Responsive text improvements */
+  @media (max-width: 640px) {
+    .hero-title {
+      @apply text-3xl;
+    }
+    
+    .hero-subtitle {
+      @apply text-base;
+    }
+  }
+}
