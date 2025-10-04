@@ -1,35 +1,3 @@
-// import { useState, useCallback } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Upload, FileText, Loader2, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
-// import { useToast } from "@/hooks/use-toast";
-
-// type AnalysisStatus = 'idle' | 'uploading' | 'processing' | 'complete' | 'error';
-
- 
-//                       className="btn-stellar"
-//                       onClick={handleReset}
-//                     >
-//                       Analyze New File
-//           </Card>
-//        </div>
-//      </div>
-//    </section>
-//  );
-// };
-//   parseFileData, 
-//   detrendData, 
-//   performBLS, 
-//   findBestPeriods, 
-//   calculateTransitStats, 
-//   calculateBasicStats 
-// } from "@/utils/lightCurveAnalysis";
-// import { 
-//   calculatePlanetRadius, 
-//   calculateSemiMajorAxis, 
-//   calculateEquilibriumTemperature,
-//   calculateFalseAlarmProbability,
- 
 
  import { useState, useCallback } from "react";
  import { Button } from "@/components/ui/button";
@@ -112,27 +80,42 @@ const AnalysisSection = ({ onAnalysisComplete, onAnalysisStart, onAnalysisReset 
       setProgress(10);
       const rawData = await parseFileData(file);
       
-      if (rawData.length < 100) {
-        throw new Error("Insufficient data points for analysis");
+      if (rawData.length < 2) {
+        throw new Error("No usable data rows found. Ensure file has at least two numeric columns (time, flux).");
       }
+
+      if (rawData.length < 10) {
+        toast({
+          title: "Low data count",
+          description: `Only ${rawData.length} points found. Results may be unreliable but analysis will proceed.`,
+        });
+      }
+
+      // Ensure time is usable: if constant or non-increasing, replace with index-based time
+      const isIncreasing = rawData.every((p, i, arr) => i === 0 || p.time > arr[i - 1].time);
+      const spanCheck = rawData[rawData.length - 1].time - rawData[0].time;
+      const data = (!isIncreasing || spanCheck <= 0)
+        ? rawData.map((p, i) => ({ time: i, flux: p.flux }))
+        : rawData;
       
       // Step 2: Data validation and preprocessing
       setCurrentStep('validation');
       setProgress(20);
-      const { rms } = calculateBasicStats(rawData);
-      const cleanData = detrendData(rawData);
+      const { rms } = calculateBasicStats(data);
+      const cleanData = detrendData(data);
       
       // Step 3: Preprocessing
       setCurrentStep('preprocessing');
       setProgress(30);
-      const timeSpan = rawData[rawData.length - 1].time - rawData[0].time;
+      const timeSpan = data[data.length - 1].time - data[0].time;
       
       // Step 4: Periodogram analysis
       setCurrentStep('periodogram');
       setProgress(50);
-      const maxPeriod = Math.min(timeSpan / 3, 50); // Don't search periods longer than 1/3 of data span
-      const steps = Math.min(2000, Math.max(500, rawData.length / 10)); // Adaptive step count
-      const { periods, powers } = performBLS(cleanData, 0.5, maxPeriod, steps);
+      const safeSpan = Math.max(1e-3, timeSpan);
+      const maxPeriod = Math.min(safeSpan / 3, 50); // Don't search periods longer than 1/3 of data span
+      const steps = Math.min(2000, Math.max(200, data.length * 5)); // Adaptive step count, works for small datasets
+      const { periods, powers } = performBLS(cleanData, 0.5, Math.max(0.6, maxPeriod), steps);
       
       // Step 5: Transit search
       setCurrentStep('transit_search');
@@ -164,7 +147,7 @@ const AnalysisSection = ({ onAnalysisComplete, onAnalysisStart, onAnalysisReset 
         snr: transitStats?.snr || 0,
         depth: transitStats?.depth || 0,
         period: bestCandidate.period,
-        dataPoints: rawData.length,
+        dataPoints: data.length,
         duration: transitStats?.duration || 0
       });
       
@@ -177,7 +160,7 @@ const AnalysisSection = ({ onAnalysisComplete, onAnalysisStart, onAnalysisReset 
         signalToNoise: transitStats?.snr || 0,
         chi2: 1.2 + Math.random() * 0.8, // Simplified chi2
         falseAlarmProbability: fap,
-        dataPoints: rawData.length,
+        dataPoints: data.length,
         observationTime: timeSpan.toFixed(1),
         rmsNoise: rms,
         semiMajorAxis: semiMajorAxis.toFixed(3),
@@ -190,7 +173,7 @@ const AnalysisSection = ({ onAnalysisComplete, onAnalysisStart, onAnalysisReset 
           snr: parseFloat(p.snr.toFixed(1))
         })),
         qualityFlags,
-        lightCurveData: rawData,
+        lightCurveData: data,
         detrendedData: cleanData
       };
       
@@ -352,3 +335,4 @@ const AnalysisSection = ({ onAnalysisComplete, onAnalysisStart, onAnalysisReset 
 };
 
 export default AnalysisSection;
+
